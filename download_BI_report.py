@@ -6,7 +6,7 @@ from requestsloader import RequestsLoader
 from processagent import ProcessAgent
 from utils.commands import mk_dir, trigger_send_to_ftpserver
 
-from exceptions.exceptions import InvalidCredentials, ReportCriteriaError
+from exceptions.exceptions import InvalidCredentials, ReportCriteriaError, NullColException
 from selenium.common.exceptions import NoSuchElementException
 
 # Global Vars
@@ -38,10 +38,13 @@ def download_report(parameter_file=PARMFILE_NAME, host=HOSTNAME, port=PORT, is_r
 
     # get the requests from the request objects, type is list
     # the single request is a dict
+
     try:
-        logging.debug('get request reocrds')
         requests = loadrequest.get_requests()
+    except NullColException as e:
+        return False, 'Header row contains null value or the value has more columns than the header.'
     except Exception as e:
+        logging.error(e)
         raise
 
     #init process agent object
